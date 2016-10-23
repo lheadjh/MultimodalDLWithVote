@@ -102,7 +102,7 @@ with tf.device('/gpu:' + GPUNUM):
             batch_y = np.asarray([int(Vid_test[i].split()[2])])
             batch_y = dense_to_one_hot(batch_y)
             
-            np.repeat(batch_y, [len(batch_x_img)], axis=0)
+            np.repeat(batch_y, [len(batch_x_aud)], axis=0)
             true = np.sum(correct_prediction.eval({x: batch_x_aud, y: batch_y}))
             if true > len(batch_x_img)/2:
                 correct+=1
