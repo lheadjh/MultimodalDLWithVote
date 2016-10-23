@@ -30,8 +30,8 @@ with tf.device('/gpu:' + GPUNUM):
     X_img_train = X_img_train[p]
     Y_train = Y_train[p]
 
-    learning_rate = 0.001
-    training_epochs = 20
+    learning_rate = 0.01
+    training_epochs = 100
     batch_size = 256
     display_step = 1
 
@@ -94,7 +94,7 @@ with tf.device('/gpu:' + GPUNUM):
                 print "Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(avg_cost)
         print "Optimization Finished!"
         
-        # Test model
+        # Test model 1
         correct = 0
         #correct_prediction = tf.equal(tf.argmax(tf.reduce_mean(pred, 0, keep_dims=True), 1), tf.argmax(y, 1))
         correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
@@ -103,16 +103,26 @@ with tf.device('/gpu:' + GPUNUM):
             batch_x_img = data.get_vid_data(Vid_test[i], 'Img')
             batch_y = np.asarray([int(Vid_test[i].split()[2])])
             batch_y = dense_to_one_hot(batch_y)
-            
-            np.repeat(batch_y, [len(batch_x_img)], axis=0)
-            true = np.sum(correct_prediction.eval({x: batch_x_img, y: batch_y}))
-            if true > len(batch_x_img)/2:
-                correct+=1        
+     
+            vote = np.sum(dense_to_one_hot(tf.argmax(pred, 1).eval({x: batch_x_img, y: batch_y})), axis=0)
+            if np.argmax(vote) == np.argmax(batch_y):
+                correct += 1
+            #batch_y = np.repeat(batch_y, [len(batch_x_img)], axis=0)
+            #true = np.sum(correct_prediction.eval({x: batch_x_img, y: batch_y}))
+            #if true > len(batch_x_img)/2:
+            #    correct+=1        
         # Calculate accuracy
-        print "Accuracy:",  float(correct)/float(len(Vid_test))
-        print 'DNNIMAGE.py'
+        vid_acc = str(float(correct)/float(len(Vid_test)))
         
+        # Test model 2
+        X_img_test = data.get_img_X_test()
+        y_test = data.get_y_test()
+        Y_test = dense_to_one_hot(y_test)
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+        frame_acc = str(accuracy.eval({x: X_img_test, y: Y_test}))
+        
+        # Write file
         f = open('DNNIMAGE.txt', 'a')
-        f.write(str(float(correct)/float(len(Vid_test))))
+        f.write(vid_acc + ' ' + frame_acc)
         f.write('\n')
         f.close()
