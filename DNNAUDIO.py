@@ -104,7 +104,7 @@ with tf.device('/gpu:' + GPUNUM):
             
             np.repeat(batch_y, [len(batch_x_aud)], axis=0)
             true = np.sum(correct_prediction.eval({x: batch_x_aud, y: batch_y}))
-            if true > len(batch_x_img)/2:
+            if true > len(batch_x_aud)/2:
                 correct+=1
         # Calculate accuracy
         print "Accuracy:",  float(correct)/float(len(Vid_test))
