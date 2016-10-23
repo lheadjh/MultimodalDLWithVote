@@ -1,0 +1,6 @@
+echo "Test DNNIMAGE" >> "DNNIMAGE.txt"
+
+for i in {1..20}
+do 
+    CUDA_VISIBLE_DEVICES=1 python DNNIMAGE.py 1 /DATA/
+done

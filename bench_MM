@@ -1,0 +1,6 @@
+echo "Test MM" >> "MM.txt"
+
+for i in {1..20}
+do 
+    CUDA_VISIBLE_DEVICES=2 python MM.py 2 /DATA/
+done
